@@ -1,0 +1,53 @@
+/* Copyright 2012 Richard Sahlin
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+ /**
+ * Vertex shader for unlit particles.
+ * Particles have:
+ * start time and current time to calculate lifetime.
+ * Diffuse color (RGBA)
+ * Colorcycle (colordelta)
+ * Intensity in varying and attribute
+ * Speed and direction
+ * Gravity (XYZW, w=time)
+ * Perspective corrected size
+ * Global size, added after perspective size
+ * @author Richard Sahlin
+ */
+
+precision mediump float;
+
+uniform mat4 PerspectiveMatrix_uniform;
+uniform mat4 RotateMatrix_uniform;
+uniform vec4 Data_uniform;              //time, size, intensity uniforms
+uniform vec4 Gravity_uniform;           //gravity x,y,z and time
+
+attribute vec3 vertex_attrib;
+attribute vec4 speed_attrib;
+attribute vec4 data_attrib; //drag,size,intensity,time
+attribute vec4 color_attrib;
+attribute vec4 color_add_attrib;
+
+varying vec4 varying_color;
+
+void main()
+{
+    float time = (Data_uniform.x-data_attrib.w);
+    varying_color = (color_attrib + (color_add_attrib * time)) * data_attrib.z;
+    vec3 speed = (speed_attrib.xyz * ((speed_attrib.w * time))) +
+                 ((time * time) * Gravity_uniform.xyz);
+    vec4 pos = RotateMatrix_uniform * vec4(vertex_attrib, 1.0);
+    gl_Position = PerspectiveMatrix_uniform * vec4(pos + vec4(speed, 0));
+    gl_PointSize = Data_uniform.y + data_attrib.y; 
+}
+

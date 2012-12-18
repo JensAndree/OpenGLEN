@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="renderer">GLES2</string>
+<string name="enablemultisampling">false</string>
+<string name="samples">1</string>
+<string name="pixelformat">RGBA8888</string>
+<string name="depthbits">16</string>
+<string name="enablePET">true</string>
+<string name="hello">Hello World, OpenGLENActivity!</string>
+<string name="app_name">OpenGLEN</string>
+<string name="runner">com.super2k.openglen</string>
+</resources>

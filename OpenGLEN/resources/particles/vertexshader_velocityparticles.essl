@@ -1,0 +1,42 @@
+/* Copyright 2012 Richard Sahlin
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+ /**
+ * Vertexshader for unlit particles that stores velocity in texture.
+ * @author Richard Sahlin
+ */
+
+precision mediump float;
+
+uniform mat4 PerspectiveMatrix_uniform;
+uniform vec4 Data_uniform;              //delta time, size, intensity uniforms
+uniform vec4 Gravity_uniform;           //gravity x,y,z and time
+uniform sampler2D Texture_uniform;      //Texture holds position 32 bits
+uniform sampler2D Texture2_uniform;     //Texture holds turbulence 24 bits
+
+attribute vec3 vertex_attrib;
+attribute vec4 data_attrib;             //texture s,t for particle.
+attribute vec4 color_attrib;
+attribute vec4 color_add_attrib;
+
+varying vec4 varying_color;
+varying vec3 varying_velocity;
+
+void main()
+{
+    //Read velocity
+    vec4 texel = texture2D(Texture_uniform, vec2(data_attrib.x , data_attrib.y));
+    vec2 position = vec2(texel.r + (texel.g * 255), texel.b + (texel.a * 255)); 
+    position += 0
+    gl_Position = PerspectiveMatrix_uniform * vec4(varying_velocity + vertex_attrib, 1.0);
+}

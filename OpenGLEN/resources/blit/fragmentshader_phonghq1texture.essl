@@ -1,0 +1,46 @@
+/* Copyright 2012 Richard Sahlin
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+ /**
+ * Fragment shader for phong shading using 1 texture source.
+ * Vectors calculated each fragment to allow correct
+ * highlights on large flat surfaces.
+ * @author Richard Sahlin
+ */
+
+precision mediump float;
+uniform vec3 DirLight_uniform;
+uniform vec4 MatDiffuse_uniform;        //The material diffuse color.
+uniform vec4 MatSpecular_uniform;       //Specular material color.
+uniform vec4 MatAmbient_uniform;
+uniform float MatShine_uniform;            //Material shine
+uniform sampler2D Texture_uniform;      //The texture sampler
+uniform vec4 LightColor_uniform;
+uniform vec3 LightPosition_uniform;
+
+varying vec3 normal_varying;
+varying vec4 vertex_varying;
+varying vec2 vTexCoord;
+varying float dotLight;
+
+void main()
+{
+    float RdotV = max(0.0,
+            dot((-reflect(normalize(
+            LightPosition_uniform - vertex_varying.xyz),
+            normal_varying)),
+            normalize( -vertex_varying.xyz) ));
+    vec4 color = vec4(pow(RdotV,MatShine_uniform) * MatSpecular_uniform * LightColor_uniform);
+    gl_FragColor = texture2D(Texture_uniform, vTexCoord) * (dotLight * MatDiffuse_uniform) *
+            LightColor_uniform + color + MatAmbient_uniform;
+}

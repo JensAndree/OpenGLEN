@@ -1,0 +1,60 @@
+/* Copyright 2012 Richard Sahlin
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+/* Lib function(s) for vertex shader transform.
+ * Functions are appended to shadersource - this shall not be defined as a
+ * standalone shader - just define the prototypes and functions that are needed.
+ * Must use same uniforms as are already defined.
+ * @author Richard Sahlin
+ */
+
+/**
+ * Read transform values and create one resulting matrix.
+ * PerspectiveMatrix_uniform is the projection matrix.
+ * Scale_uniform contains scale values, X Y Z
+ * Rotate_uniform is rotation, X Y Z
+ */
+mat4 vertexTransform(){
+
+    mat4 modelview = mat4(1);
+    modelview[0] = Scale_uniform.x * modelview[0];
+    modelview[1] = Scale_uniform.y * modelview[1];
+    modelview[2] = Scale_uniform.z * modelview[2];
+    modelview[3] = Translate_uniform;
+    mat4 concat = PerspectiveMatrix_uniform * modelview;
+
+    //Rotate
+    float cx = cos(Rotate_uniform.x);
+    float sx = sin(Rotate_uniform.x);
+    float cy = cos(Rotate_uniform.y);
+    float sy = sin(Rotate_uniform.y);
+    float cz = cos(Rotate_uniform.z);
+    float sz = sin(Rotate_uniform.z);
+    modelview = mat4(1);
+
+    modelview[0][0]  =   cy * cz;
+    modelview[0][1]  =  -cy * sz;
+    modelview[0][2]  =   sy;
+
+
+    modelview[1][0]  =  (cx * sy) * cz + cx * sz;
+    modelview[1][1]  = -(cx * sy) * sz + cx * cz;
+    modelview[1][2]  =  -sx * cy;
+
+    modelview[2][0]  = -(sx * sy) * cz + sx * sz;
+    modelview[2][1]  =  (sx * sy) * sz + sx * cz;
+    modelview[2][2] =  cx * cy;
+
+    return concat * modelview;
+}
